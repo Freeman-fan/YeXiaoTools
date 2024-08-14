@@ -84,6 +84,7 @@ class MainWindows(QMainWindow, Ui_MainWindow):
                     csvwriter.writerow(['',])
         except Exception as e:
             pass
+        
 
 
 if __name__ == "__main__":
