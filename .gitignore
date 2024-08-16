@@ -7,4 +7,5 @@ Untitled1.ipynb
 *.ui
 *.exe
 *.spec
+*.db
 .gitignore
