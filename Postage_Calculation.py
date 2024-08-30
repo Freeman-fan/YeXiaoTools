@@ -127,13 +127,17 @@ class Mainwindows(QMainWindow, Ui_Postage_Calculation_MainWindow):
         self.btn_DelGood.clicked.connect(self.DelGood)
         self.btn_AddLine.clicked.connect(self.AddLine)
         self.btn_DelLine.clicked.connect(self.DelLine)
+        self.btn_CleanSearch.clicked.connect(self.CleanSearch)
         self.btn_SaveFinaTab.clicked.connect(self.SaveFinTab)
         self.list_mNum.itemDoubleClicked.connect(self.onItemDoubleClicked)
         self.list_mNum.itemClicked.connect(self.onItemDoubleClicked)
+        self.edit_Search.setPlaceholderText('搜索内容...')
+        self.edit_Search.textChanged.connect(self.Search)
 
         # 类变量
         self.file_path = None
         self.json_path = None
+        self.goodID_list = []
 
     # 创建项目
     def NewProject(self):
@@ -164,7 +168,6 @@ class Mainwindows(QMainWindow, Ui_Postage_Calculation_MainWindow):
         self.edit_InlandPost.clear()
         self.edit_rpg.clear()
         self.edit_TotalGram.clear()
-
 
         self.file_path = None
         self.json_path = None
@@ -217,7 +220,9 @@ class Mainwindows(QMainWindow, Ui_Postage_Calculation_MainWindow):
                     data = json.load(jsonfile)
                     for item in data:
                         goodID = item.get("goodID")
-                        self.list_mNum.addItem(goodID)
+                        if goodID:
+                            self.list_mNum.addItem(goodID)
+                            self.goodID_list.append(goodID)
                     self.edit_rpg.setText(str(data[0].get("rpg")))
                     self.edit_InlandPost.setText(str(data[0].get("inlandPostage")))
                     if data[0].get("isCountPostage") == False:
@@ -411,6 +416,7 @@ class Mainwindows(QMainWindow, Ui_Postage_Calculation_MainWindow):
                 with open(self.json_path, "w", encoding="utf-8-sig") as jsonfile:
                     json.dump(data, jsonfile, ensure_ascii=False, indent=4)
                 self.list_mNum.addItem(goodID)
+                self.goodID_list.append(goodID)
                 items = self.list_mNum.findItems(goodID, Qt.MatchFlag.MatchExactly)
                 if items:
                     current_item = self.list_mNum.currentItem()
@@ -439,6 +445,7 @@ class Mainwindows(QMainWindow, Ui_Postage_Calculation_MainWindow):
                 self.tab_Details.setRowCount(0)
                 item = self.list_mNum.selectedItems()[0]
                 goodID_Del = item.text()
+                self.goodID_list.remove(goodID_Del)
                 self.list_mNum.takeItem(self.list_mNum.row(item))
                 with open(self.json_path, "r", encoding="utf-8-sig") as jsonfile:
                     data = json.load(jsonfile)
@@ -472,6 +479,16 @@ class Mainwindows(QMainWindow, Ui_Postage_Calculation_MainWindow):
             else:
                 self.tab_Details.removeRow(row)
 
+    # 清空搜索框
+    def CleanSearch(self):
+        self.edit_Search.clear()
+
+    # 搜索
+    def Search(self, text):
+        self.list_mNum.clear()
+        for item in self.goodID_list:
+            if text in item:
+                self.list_mNum.addItem(QListWidgetItem(item))
 
 # 类：json格式化
 class Goods_json:
