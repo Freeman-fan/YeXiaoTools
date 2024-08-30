@@ -98,9 +98,9 @@ def ProcessJson(conn, data):
             name = item["name"]
             jpprice = item["price"]
             firstphoto = item["thumbnails"][0]
-            insert_sql = """
-                INSERT INTO items (mNum, status, name, jpprice, firstPhoto) VALUES (?, ?, ?, ?, ?);
-                """
+            # insert_sql = """
+            #     INSERT INTO items (mNum, status, name, jpprice, firstPhoto) VALUES (?, ?, ?, ?, ?);
+            #     """
             # 执行插入操作
             add_item(
                 conn,
@@ -145,15 +145,15 @@ if __name__ == "__main__":
     create_db_and_table(conn)
     clear_table_data(conn)
     # 测试：进行一次请求并写入数据库
-    for i in range(99):
-        request_pjsk = RequestMae("プロセカ", maxprice="")
+    for i in range(99999):
+        request_pjsk = RequestMae("プロセカ")
         response_pjsk = request_pjsk.GetGoods()
         if response_pjsk.status_code == 200:
             # 解析返回的JSON数据
             data = response_pjsk.json()
-            ProcessJson(data)
+            ProcessJson(conn, data)
         else:
             print("Failed to retrieve data:", response_pjsk.status_code)
         update_and_print_records(conn)
-        print(f"执行第{i+1}次")
-        time.sleep(10)
+        print(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())}：成功执行")
+        time.sleep(1)
