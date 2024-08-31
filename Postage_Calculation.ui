@@ -26,7 +26,7 @@
    <string>国际表</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_2">
+   <layout class="QHBoxLayout" name="horizontalLayout_5">
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
@@ -36,7 +36,7 @@
        <attribute name="title">
         <string>分表</string>
        </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_4">
           <item>
@@ -97,7 +97,7 @@
          </widget>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_3">
+         <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
            <widget class="QPushButton" name="btn_NewProject">
             <property name="maximumSize">
@@ -157,6 +157,20 @@
            </widget>
           </item>
           <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item>
+             <widget class="QLabel" name="label_4">
+              <property name="text">
+               <string>箱号：</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="edit_BoxID"/>
+            </item>
+           </layout>
+          </item>
+          <item>
            <widget class="QLabel" name="label">
             <property name="maximumSize">
              <size>
@@ -165,7 +179,7 @@
              </size>
             </property>
             <property name="text">
-             <string>克重单价(r/g)</string>
+             <string>克重单价(r/g)：</string>
             </property>
            </widget>
           </item>
@@ -191,7 +205,7 @@
              </size>
             </property>
             <property name="text">
-             <string>国内均摊(r)</string>
+             <string>国内均摊(r)：</string>
             </property>
            </widget>
           </item>
@@ -217,7 +231,7 @@
              </size>
             </property>
             <property name="text">
-             <string>重算所有</string>
+             <string>更新项目</string>
             </property>
            </widget>
           </item>
@@ -300,7 +314,7 @@
              </size>
             </property>
             <property name="text">
-             <string>本单总重</string>
+             <string>本单总重：</string>
             </property>
            </widget>
           </item>
@@ -396,7 +410,7 @@
             <property name="sizeHint" stdset="0">
              <size>
               <width>100</width>
-              <height>100</height>
+              <height>124</height>
              </size>
             </property>
            </spacer>

@@ -66,7 +66,13 @@ def GetFromCsv(csv_path, json_path):
                 cn_group.clear()
                 gram_group.clear()
     # 构建元数据
-    base_info = {"isCountPostage": False, "rpg": 0.12, "inlandPostage": 2.00}
+    file_name, _ = os.path.splitext(os.path.basename(csv_path))
+    base_info = {
+        "BoxID": f"{file_name}",
+        "isCountPostage": False,
+        "rpg": 0.12,
+        "inlandPostage": 2.00,
+    }
     json_list.insert(0, base_info)
     with open(json_path, "w", encoding="utf-8-sig") as jsonfile:
         json.dump(json_list, jsonfile, ensure_ascii=False, indent=4)
@@ -131,7 +137,7 @@ class Mainwindows(QMainWindow, Ui_Postage_Calculation_MainWindow):
         self.btn_SaveFinaTab.clicked.connect(self.SaveFinTab)
         self.list_mNum.itemDoubleClicked.connect(self.onItemDoubleClicked)
         self.list_mNum.itemClicked.connect(self.onItemDoubleClicked)
-        self.edit_Search.setPlaceholderText('搜索内容...')
+        self.edit_Search.setPlaceholderText("搜索内容...")
         self.edit_Search.textChanged.connect(self.Search)
 
         # 类变量
@@ -173,12 +179,14 @@ class Mainwindows(QMainWindow, Ui_Postage_Calculation_MainWindow):
         self.json_path = None
         try:
             file_dialog = QFileDialog()
-            file_dialog.setNameFilter("Excel文件(*.xlsx);;CSV文件(*.csv);;Json文件(*.json);;所有格式(*)")
+            file_dialog.setNameFilter(
+                "Excel文件(*.xlsx);;CSV文件(*.csv);;Json文件(*.json);;所有格式(*)"
+            )
             if file_dialog.exec():
                 self.file_path = file_dialog.selectedFiles()[0]
                 name_filter = file_dialog.selectedNameFilter()
-                if 'Json' in name_filter:
-                    #JSON项目
+                if "Json" in name_filter:
+                    # JSON项目
                     self.json_path = file_dialog.selectedFiles()[0]
                 else:
                     # 创建json文件
@@ -193,7 +201,8 @@ class Mainwindows(QMainWindow, Ui_Postage_Calculation_MainWindow):
                             self,
                             "文件存在",
                             "当前目录下已存在项目文件，是否覆盖？",
-                            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                            QMessageBox.StandardButton.Yes
+                            | QMessageBox.StandardButton.No,
                         )
                         if response == QMessageBox.StandardButton.Yes:
                             with open(json_path, "w") as json_file:
@@ -209,7 +218,8 @@ class Mainwindows(QMainWindow, Ui_Postage_Calculation_MainWindow):
                         df = pd.read_excel(self.file_path)
                         csv_file_path = os.path.join(
                             os.path.dirname(self.file_path),
-                            os.path.splitext(os.path.basename(self.file_path))[0] + ".csv",
+                            os.path.splitext(os.path.basename(self.file_path))[0]
+                            + ".csv",
                         )
                         df.to_csv(csv_file_path, index=False, encoding="utf-8-sig")
                         self.file_path = csv_file_path
@@ -225,6 +235,7 @@ class Mainwindows(QMainWindow, Ui_Postage_Calculation_MainWindow):
                             self.goodID_list.append(goodID)
                     self.edit_rpg.setText(str(data[0].get("rpg")))
                     self.edit_InlandPost.setText(str(data[0].get("inlandPostage")))
+                    self.edit_BoxID.setText(str(data[0].get("BoxID")))
                     if data[0].get("isCountPostage") == False:
                         response = QMessageBox.question(
                             self,
@@ -268,6 +279,7 @@ class Mainwindows(QMainWindow, Ui_Postage_Calculation_MainWindow):
             if item.get("rpg"):
                 item["rpg"] = float(self.edit_rpg.text())
                 item["inlandPostage"] = float(self.edit_InlandPost.text())
+                item["BoxID"] = self.edit_BoxID.text()
         # 写回json中
         with open(self.json_path, "w", encoding="utf-8-sig") as jsonfile:
             json.dump(data, jsonfile, ensure_ascii=False, indent=4)
@@ -358,13 +370,14 @@ class Mainwindows(QMainWindow, Ui_Postage_Calculation_MainWindow):
 
     # 导出总表
     def SaveFinTab(self):
-        save_path = None
         try:
-            file_dialog = QFileDialog()
-            file_dialog.setNameFilter("CSV文件(*.csv)")
-            if file_dialog.exec():
-                save_path = file_dialog.selectedFiles()[0]
-                # 保存为CSV
+            save_path, _ = QFileDialog.getSaveFileName(
+                self,
+                "选择路径",
+                directory=f"{os.path.join(os.path.dirname(self.json_path),self.edit_BoxID.text())}总表.csv",
+                filter="CSV文件(*.csv)",
+            )
+            if save_path:
                 if not save_path.endswith(".csv"):
                     save_path += ".csv"
                 with open(save_path, "w", newline="", encoding="utf-8-sig") as csvfile:
@@ -489,6 +502,7 @@ class Mainwindows(QMainWindow, Ui_Postage_Calculation_MainWindow):
         for item in self.goodID_list:
             if text in item:
                 self.list_mNum.addItem(QListWidgetItem(item))
+
 
 # 类：json格式化
 class Goods_json:
