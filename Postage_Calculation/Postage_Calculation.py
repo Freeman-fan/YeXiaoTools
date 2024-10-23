@@ -272,20 +272,21 @@ class Mainwindows(QMainWindow, Ui_Postage_Calculation_MainWindow):
 
     # 重算所有订单
     def ReCountAll(self):
-        # 更新rpg和inlandPostage
-        with open(self.json_path, "r", encoding="utf-8-sig") as jsonfile:
-            data = json.load(jsonfile)
-        for item in data:
-            if item.get("rpg"):
-                item["rpg"] = float(self.edit_rpg.text())
-                item["inlandPostage"] = float(self.edit_InlandPost.text())
-                item["BoxID"] = self.edit_BoxID.text()
-        # 写回json中
-        with open(self.json_path, "w", encoding="utf-8-sig") as jsonfile:
-            json.dump(data, jsonfile, ensure_ascii=False, indent=4)
-        CountAll(self.json_path)
-        QMessageBox.information(self, "提示", "邮费信息已更新")
-        self.tab_Details.setRowCount(0)
+        if self.json_path != None:
+            # 更新rpg和inlandPostage
+            with open(self.json_path, "r", encoding="utf-8-sig") as jsonfile:
+                data = json.load(jsonfile)
+            for item in data:
+                if item.get("rpg"):
+                    item["rpg"] = float(self.edit_rpg.text())
+                    item["inlandPostage"] = float(self.edit_InlandPost.text())
+                    item["BoxID"] = self.edit_BoxID.text()
+            # 写回json中
+            with open(self.json_path, "w", encoding="utf-8-sig") as jsonfile:
+                json.dump(data, jsonfile, ensure_ascii=False, indent=4)
+            CountAll(self.json_path)
+            QMessageBox.information(self, "提示", "邮费信息已更新")
+            self.tab_Details.setRowCount(0)
 
     # 重算当前订单
     def ReCount(self):
@@ -330,68 +331,72 @@ class Mainwindows(QMainWindow, Ui_Postage_Calculation_MainWindow):
 
     # 生成总表
     def PrintFinTab(self):
-        self.tab_FineTab.setRowCount(0)
-        with open(self.json_path, "r", encoding="utf-8-sig") as jsonfile:
-            data = json.load(jsonfile)
-        each_gram_group = []
-        cn_group = []
-        gram_group = []
-        price_group = []
-        for item in data:
-            if item.get("goodID"):
-                each_gram_group.append(item.get("eachGram"))
-        for each_group in each_gram_group:
-            for cn, gram_price_group in each_group.items():
-                gram, price = gram_price_group
-                try:
-                    # cn存在
-                    cn_index = cn_group.index(cn)
-                    gram_group[cn_index] += gram
-                    price_group[cn_index] += price
-                except:
-                    cn_group.append(cn)
-                    gram_group.append(gram)
-                    price_group.append(price)
-        self.tabWidget.setCurrentIndex(1)
-        tab_index = 0
-        for cn, gram, price in zip(cn_group, gram_group, price_group):
-            gram = f"{gram:.2f}"
-            price = f"{price:.2f}"
-            self.tab_FineTab.insertRow(self.tab_FineTab.rowCount())
-            self.tab_FineTab.setItem(
-                self.tab_FineTab.rowCount() - 1, 0, QTableWidgetItem(cn)
-            )
-            self.tab_FineTab.setItem(
-                self.tab_FineTab.rowCount() - 1, 1, QTableWidgetItem(gram)
-            )
-            self.tab_FineTab.setItem(
-                self.tab_FineTab.rowCount() - 1, 2, QTableWidgetItem(price)
-            )
+        if self.json_path != None:
+            self.tab_FineTab.setRowCount(0)
+            with open(self.json_path, "r", encoding="utf-8-sig") as jsonfile:
+                data = json.load(jsonfile)
+            each_gram_group = []
+            cn_group = []
+            gram_group = []
+            price_group = []
+            for item in data:
+                if item.get("goodID"):
+                    each_gram_group.append(item.get("eachGram"))
+            for each_group in each_gram_group:
+                for cn, gram_price_group in each_group.items():
+                    gram, price = gram_price_group
+                    try:
+                        # cn存在
+                        cn_index = cn_group.index(cn)
+                        gram_group[cn_index] += gram
+                        price_group[cn_index] += price
+                    except:
+                        cn_group.append(cn)
+                        gram_group.append(gram)
+                        price_group.append(price)
+            self.tabWidget.setCurrentIndex(1)
+            tab_index = 0
+            for cn, gram, price in zip(cn_group, gram_group, price_group):
+                gram = f"{gram:.2f}"
+                price = f"{price:.2f}"
+                self.tab_FineTab.insertRow(self.tab_FineTab.rowCount())
+                self.tab_FineTab.setItem(
+                    self.tab_FineTab.rowCount() - 1, 0, QTableWidgetItem(cn)
+                )
+                self.tab_FineTab.setItem(
+                    self.tab_FineTab.rowCount() - 1, 1, QTableWidgetItem(gram)
+                )
+                self.tab_FineTab.setItem(
+                    self.tab_FineTab.rowCount() - 1, 2, QTableWidgetItem(price)
+                )
 
     # 导出总表
     def SaveFinTab(self):
-        try:
-            save_path, _ = QFileDialog.getSaveFileName(
-                self,
-                "选择路径",
-                directory=f"{os.path.join(os.path.dirname(self.json_path),self.edit_BoxID.text())}总表.csv",
-                filter="CSV文件(*.csv)",
-            )
-            if save_path:
-                if not save_path.endswith(".csv"):
-                    save_path += ".csv"
-                with open(save_path, "w", newline="", encoding="utf-8-sig") as csvfile:
-                    csvwriter = csv.writer(csvfile)
-                    for rowindex in range(self.tab_FineTab.rowCount() - 1):
-                        csvwriter.writerow(
-                            [
-                                self.tab_FineTab.item(rowindex, 0).text(),
-                                self.tab_FineTab.item(rowindex, 1).text(),
-                                self.tab_FineTab.item(rowindex, 2).text(),
-                            ]
-                        )
-        except Exception as e:
-            QMessageBox.warning(self, "警告", f"保存失败。{str(e)}")
+        if self.json_path != None:
+            try:
+                save_path, _ = QFileDialog.getSaveFileName(
+                    self,
+                    "选择路径",
+                    directory=f"{os.path.join(os.path.dirname(self.json_path),self.edit_BoxID.text())}总表.csv",
+                    filter="CSV文件(*.csv)",
+                )
+                if save_path:
+                    if not save_path.endswith(".csv"):
+                        save_path += ".csv"
+                    with open(
+                        save_path, "w", newline="", encoding="utf-8-sig"
+                    ) as csvfile:
+                        csvwriter = csv.writer(csvfile)
+                        for rowindex in range(self.tab_FineTab.rowCount()):
+                            csvwriter.writerow(
+                                [
+                                    self.tab_FineTab.item(rowindex, 0).text(),
+                                    self.tab_FineTab.item(rowindex, 1).text(),
+                                    self.tab_FineTab.item(rowindex, 2).text(),
+                                ]
+                            )
+            except Exception as e:
+                QMessageBox.warning(self, "警告", f"保存失败。{str(e)}")
 
     # list双击事件
     def onItemDoubleClicked(self, item):
@@ -415,82 +420,86 @@ class Mainwindows(QMainWindow, Ui_Postage_Calculation_MainWindow):
 
     # 新建订单
     def NewGood(self):
-        try:
-            if self.json_path == None:
-                return
-            goodID, ok = QInputDialog.getText(
-                self, "商品ID", "请输入ID", QLineEdit.EchoMode.Normal
-            )
-            if ok:
-                good_json = Goods_json(mNum=goodID)
-                with open(self.json_path, "r", encoding="utf-8-sig") as jsonfile:
-                    data = json.load(jsonfile)
-                data.append(good_json.info_json)
-                with open(self.json_path, "w", encoding="utf-8-sig") as jsonfile:
-                    json.dump(data, jsonfile, ensure_ascii=False, indent=4)
-                self.list_mNum.addItem(goodID)
-                self.goodID_list.append(goodID)
-                items = self.list_mNum.findItems(goodID, Qt.MatchFlag.MatchExactly)
-                if items:
-                    current_item = self.list_mNum.currentItem()
-                    if current_item:
-                        current_item.setSelected(False)
-                    items[0].setSelected(True)
-                item = self.list_mNum.selectedItems()[0]
-                self.list_mNum.scrollToItem(
-                    item, QAbstractItemView.ScrollHint.EnsureVisible
+        if self.json_path != None:
+            try:
+                if self.json_path == None:
+                    return
+                goodID, ok = QInputDialog.getText(
+                    self, "商品ID", "请输入ID", QLineEdit.EchoMode.Normal
                 )
-                self.onItemDoubleClicked(item)
-                self.AddLine()
-        except Exception as e:
-            QMessageBox.warning(self, "警告", str(e))
+                if ok:
+                    good_json = Goods_json(mNum=goodID)
+                    with open(self.json_path, "r", encoding="utf-8-sig") as jsonfile:
+                        data = json.load(jsonfile)
+                    data.append(good_json.info_json)
+                    with open(self.json_path, "w", encoding="utf-8-sig") as jsonfile:
+                        json.dump(data, jsonfile, ensure_ascii=False, indent=4)
+                    self.list_mNum.addItem(goodID)
+                    self.goodID_list.append(goodID)
+                    items = self.list_mNum.findItems(goodID, Qt.MatchFlag.MatchExactly)
+                    if items:
+                        current_item = self.list_mNum.currentItem()
+                        if current_item:
+                            current_item.setSelected(False)
+                        items[0].setSelected(True)
+                    item = self.list_mNum.selectedItems()[0]
+                    self.list_mNum.scrollToItem(
+                        item, QAbstractItemView.ScrollHint.EnsureVisible
+                    )
+                    self.onItemDoubleClicked(item)
+                    self.AddLine()
+            except Exception as e:
+                QMessageBox.warning(self, "警告", str(e))
 
     # 删除订单
     def DelGood(self):
-        try:
-            reponse = QMessageBox.question(
-                self,
-                "删除",
-                "删除后不可恢复！确定要删除吗？",
-                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-            )
-            if reponse == QMessageBox.StandardButton.Yes:
-                self.tab_Details.setRowCount(0)
-                item = self.list_mNum.selectedItems()[0]
-                goodID_Del = item.text()
-                self.goodID_list.remove(goodID_Del)
-                self.list_mNum.takeItem(self.list_mNum.row(item))
-                with open(self.json_path, "r", encoding="utf-8-sig") as jsonfile:
-                    data = json.load(jsonfile)
-                data = [item for item in data if item.get("goodID") != goodID_Del]
-                with open(self.json_path, "w", encoding="utf-8-sig") as jsonfile:
-                    json.dump(data, jsonfile, ensure_ascii=False, indent=4)
-        except Exception as e:
-            QMessageBox.warning(self, "警告", str(e))
+        if self.json_path != None:
+            try:
+                reponse = QMessageBox.question(
+                    self,
+                    "删除",
+                    "删除后不可恢复！确定要删除吗？",
+                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                )
+                if reponse == QMessageBox.StandardButton.Yes:
+                    self.tab_Details.setRowCount(0)
+                    item = self.list_mNum.selectedItems()[0]
+                    goodID_Del = item.text()
+                    self.goodID_list.remove(goodID_Del)
+                    self.list_mNum.takeItem(self.list_mNum.row(item))
+                    with open(self.json_path, "r", encoding="utf-8-sig") as jsonfile:
+                        data = json.load(jsonfile)
+                    data = [item for item in data if item.get("goodID") != goodID_Del]
+                    with open(self.json_path, "w", encoding="utf-8-sig") as jsonfile:
+                        json.dump(data, jsonfile, ensure_ascii=False, indent=4)
+            except Exception as e:
+                QMessageBox.warning(self, "警告", str(e))
 
     # 添加行
     def AddLine(self):
-        if self.list_mNum.selectedItems():
-            self.tab_Details.insertRow(self.tab_Details.rowCount())
+        if self.json_path != None:
+            if self.list_mNum.selectedItems():
+                self.tab_Details.insertRow(self.tab_Details.rowCount())
 
     # 删除行
     def DelLine(self):
-        if self.list_mNum.selectedItems():
-            row = self.tab_Details.currentRow()
-            if row == -1:
-                row = self.tab_Details.rowCount() - 1
-            if self.tab_Details.item(row, 0) != None:
-                cn = self.tab_Details.item(row, 0).text()
-                response = QMessageBox.question(
-                    self,
-                    "删除",
-                    f"您即将删除cn为“{cn}”的行，删除后不可恢复！确定要删除吗？",
-                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-                )
-                if response == QMessageBox.StandardButton.Yes:
+        if self.json_path != None:
+            if self.list_mNum.selectedItems():
+                row = self.tab_Details.currentRow()
+                if row == -1:
+                    row = self.tab_Details.rowCount() - 1
+                if self.tab_Details.item(row, 0) != None:
+                    cn = self.tab_Details.item(row, 0).text()
+                    response = QMessageBox.question(
+                        self,
+                        "删除",
+                        f"您即将删除cn为“{cn}”的行，删除后不可恢复！确定要删除吗？",
+                        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                    )
+                    if response == QMessageBox.StandardButton.Yes:
+                        self.tab_Details.removeRow(row)
+                else:
                     self.tab_Details.removeRow(row)
-            else:
-                self.tab_Details.removeRow(row)
 
     # 清空搜索框
     def CleanSearch(self):
