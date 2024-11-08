@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file 'd:\Onedrive\CodeS\Python\YeXiao\Postage_Calculation.ui'
+# Form implementation generated from reading ui file 'd:\Onedrive\CodeS\Python\YeXiaoTools\Postage_Calculation\Postage_Calculation.ui'
 #
 # Created by: PyQt6 UI code generator 6.7.1
 #
