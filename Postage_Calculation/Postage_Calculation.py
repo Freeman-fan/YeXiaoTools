@@ -526,6 +526,12 @@ class Goods_json:
         }
 
 
+# 类：json文件读写
+class ProgramJsonFile:
+    def __init__(self, filePath : str = ''):
+        self.filePath = filePath
+
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     mainwindows = Mainwindows()

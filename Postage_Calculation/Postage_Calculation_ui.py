@@ -186,11 +186,17 @@ class Ui_MainWindow(object):
         self.verticalLayout.addItem(spacerItem1)
         self.horizontalLayout_2.addLayout(self.verticalLayout)
         self.tabWidget.addTab(self.tab_2, "")
+        self.tab_3 = QtWidgets.QWidget()
+        self.tab_3.setObjectName("tab_3")
+        self.listWidget = QtWidgets.QListWidget(parent=self.tab_3)
+        self.listWidget.setGeometry(QtCore.QRect(180, 200, 256, 192))
+        self.listWidget.setObjectName("listWidget")
+        self.tabWidget.addTab(self.tab_3, "")
         self.horizontalLayout_5.addWidget(self.tabWidget)
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(2)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -229,3 +235,4 @@ class Ui_MainWindow(object):
         item.setText(_translate("MainWindow", "肾额"))
         self.btn_SaveFinaTab.setText(_translate("MainWindow", "导出总表"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "整箱总表"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), _translate("MainWindow", "多表合一"))
