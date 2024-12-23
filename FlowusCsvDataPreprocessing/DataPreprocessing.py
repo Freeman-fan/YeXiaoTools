@@ -35,8 +35,8 @@ def ReadCsvAndWriteToDB():
             if row[0] == "m码":
                 continue
             m_code = row[0]
-            main_spelling = row[12]
-            participation_in_splicing = row[11]
+            main_spelling = row[12].lower()
+            participation_in_splicing = row[11].lower() + '，'
             price = row[1]
             status = row[8]
             weight = row[9]
